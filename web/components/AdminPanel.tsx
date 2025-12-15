@@ -1,19 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { formatEther } from 'viem';
 import { useGymSBT } from '../lib/hooks/useGymSBT';
 import { useWallet } from '../lib/hooks/useWallet';
 
 export function AdminPanel() {
   const { account, isConnected } = useWallet();
-  const { pricePerMonth, isOwner, setPrice, loading, error } = useGymSBT(account);
+  const { pricePerMonth, isOwner, setPrice, loading, error, contractAddress, isConfirmed, refetchPrice } = useGymSBT(account);
   const [newPrice, setNewPrice] = useState<string>('');
   const [success, setSuccess] = useState(false);
+  const [previousConfirmed, setPreviousConfirmed] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  if (!isConnected) {
+  // Watch for transaction confirmation - MUST be called before any conditional returns
+  useEffect(() => {
+    if (isConfirmed && !previousConfirmed && !loading) {
+      setSuccess(true);
+      setNewPrice('');
+      setTimeout(() => {
+        setSuccess(false);
+        setPreviousConfirmed(false);
+      }, 5000);
+    }
+    if (isConfirmed) {
+      setPreviousConfirmed(true);
+    }
+    if (!isConfirmed && previousConfirmed && !loading) {
+      setPreviousConfirmed(false);
+    }
+  }, [isConfirmed, loading, previousConfirmed]);
+
+  // Don't render if not connected
+  if (!isConnected || !account) {
     return null;
   }
 
+  // Only show admin panel to the contract owner
+  // Owner address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 (Anvil account 0)
   if (!isOwner) {
     return null;
   }
@@ -26,12 +50,13 @@ export function AdminPanel() {
 
     try {
       setSuccess(false);
+      setPreviousConfirmed(false);
       await setPrice(newPrice);
-      setSuccess(true);
-      setNewPrice('');
-      setTimeout(() => setSuccess(false), 5000);
-    } catch (err) {
+      // Success will be set when transaction is confirmed via useEffect
+    } catch (err: unknown) {
       console.error('Error setting price:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Error al establecer el precio';
+      alert(errorMessage);
     }
   };
 
@@ -42,13 +67,30 @@ export function AdminPanel() {
       </h2>
 
       <div className="space-y-4">
-        <div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
-            Precio actual por mes:
-          </p>
-          <p className="text-xl font-bold text-black dark:text-zinc-50">
-            {pricePerMonth || 'No establecido'} ETH
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+              Precio actual por mes:
+            </p>
+            <p className="text-xl font-bold text-black dark:text-zinc-50">
+              {pricePerMonth ? formatEther(pricePerMonth) : 'No establecido'} ETH
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await refetchPrice();
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 500);
+              }
+            }}
+            disabled={isRefreshing}
+            className="px-3 py-2 text-sm bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 disabled:opacity-50 text-black dark:text-zinc-50 rounded-lg transition-colors"
+            title="Actualizar precio"
+          >
+            {isRefreshing ? '...' : '↻'}
+          </button>
         </div>
 
         <div>

@@ -2,11 +2,11 @@ import { defineChain } from 'viem';
 
 /**
  * Anvil local network configuration
- * Chain ID: 3133731337
- * Port: 55556
+ * Chain ID: 31337 (default Anvil chain ID)
+ * Port: 8545 (default Anvil port)
  */
 export const anvil = defineChain({
-  id: 3133731337,
+  id: 31337,
   name: 'Anvil',
   nativeCurrency: {
     decimals: 18,
@@ -15,7 +15,7 @@ export const anvil = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['http://localhost:55556'],
+      http: ['http://localhost:8545'],
     },
   },
 });

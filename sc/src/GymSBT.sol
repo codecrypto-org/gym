@@ -59,7 +59,7 @@ contract GymSBT is IERC721 {
 
     /// @notice Constructor sets the contract owner and token metadata
     /// @param _name Name of the token collection
-    /// @param _symbol Symbol of the token collection
+    /// @param _symbol Symbol of the token collection 
     constructor(string memory _name, string memory _symbol) {
         name = _name;
         symbol = _symbol;

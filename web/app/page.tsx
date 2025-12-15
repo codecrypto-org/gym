@@ -1,11 +1,19 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useWallet } from '../lib/hooks/useWallet';
 import { PurchaseTokenForm } from '../components/PurchaseTokenForm';
 import { AdminPanel } from '../components/AdminPanel';
+import { UserTokens } from '../components/UserTokens'; 
 
 export default function Home() {
   const { account, isConnected, connect, disconnect, isConnecting, error: walletError } = useWallet();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering wallet state after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans">
@@ -22,7 +30,12 @@ export default function Home() {
 
         {/* Wallet Connection */}
         <div className="mb-8 text-center">
-          {!isConnected ? (
+          {!mounted ? (
+            // Show a placeholder during SSR to prevent hydration mismatch
+            <div className="h-16 flex items-center justify-center">
+              <div className="text-sm text-zinc-500 dark:text-zinc-500">Cargando...</div>
+            </div>
+          ) : !isConnected ? (
             <div>
               <button
                 onClick={connect}
@@ -33,6 +46,11 @@ export default function Home() {
               </button>
               {walletError && (
                 <p className="mt-2 text-sm text-red-600 dark:text-red-400">{walletError}</p>
+              )}
+              {!isConnecting && !walletError && (
+                <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                  Asegúrate de tener Rabbit Wallet instalado
+                </p>
               )}
             </div>
           ) : (
@@ -51,7 +69,10 @@ export default function Home() {
         </div>
 
         {/* Admin Panel */}
-        {isConnected && <AdminPanel />}
+        {mounted && isConnected && <AdminPanel />}
+
+        {/* User Tokens */}
+        {mounted && isConnected && <UserTokens />}
 
         {/* Purchase Form */}
         <PurchaseTokenForm />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { formatEther } from 'viem';
 import { useGymSBT } from '../lib/hooks/useGymSBT';
 import { useWallet } from '../lib/hooks/useWallet';
 
@@ -28,8 +29,9 @@ export function PurchaseTokenForm() {
       setSuccess(true);
       setMonths('1');
       setTimeout(() => setSuccess(false), 5000);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error purchasing token:', err);
+      alert(err.message || 'Error al comprar el token');
     }
   };
 
@@ -43,7 +45,7 @@ export function PurchaseTokenForm() {
 
       {pricePerMonth && (
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-          Precio por mes: <span className="font-semibold">{pricePerMonth} ETH</span>
+          Precio por mes: <span className="font-semibold">{formatEther(pricePerMonth)} ETH</span>
         </p>
       )}
 

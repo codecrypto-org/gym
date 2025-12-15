@@ -16,7 +16,7 @@ cd "$(dirname "$0")/../sc"
 
 # Ejecutar el script de deploy
 DEPLOY_OUTPUT=$(forge script script/DeployGymSBT.s.sol:DeployGymSBT \
-  --rpc-url http://localhost:55556 \
+  --rpc-url http://localhost:8545 \
   --broadcast \
   --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 2>&1)
 
