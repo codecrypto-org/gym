@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const contractAddress = process.argv[2];
-const chainId = process.argv[3] || '3133731337'; // Default: Anvil
+const chainId = process.argv[3] || '31337'; // Default: Anvil
 
 if (!contractAddress) {
   console.error('Error: Se requiere la dirección del contrato');
@@ -27,7 +27,7 @@ const addressesFile = path.join(__dirname, '../web/lib/contracts/addresses.ts');
 
 // Determinar el nombre de la red basado en el chainId
 let networkName = 'anvil';
-if (chainId === '3133731337') {
+if (chainId === '31337') {
   networkName = 'anvil';
 } else if (chainId === '11155111') {
   networkName = 'sepolia';
@@ -49,7 +49,7 @@ if (fs.existsSync(addressesFile)) {
  */
 
 export const GYM_SBT_ADDRESSES: Record<string, string> = {
-  // Anvil local network (chainId: 3133731337)
+  // Anvil local network (chainId: 31337)
   anvil: "",
   // Add other networks as needed
   // sepolia: "",
@@ -58,7 +58,7 @@ export const GYM_SBT_ADDRESSES: Record<string, string> = {
 
 export const getGymSBTAddress = (chainId: number): string | undefined => {
   // Anvil chain ID
-  if (chainId === 3133731337) {
+  if (chainId === 31337) {
     return GYM_SBT_ADDRESSES.anvil;
   }
   // Add other chain IDs as needed

@@ -37,12 +37,12 @@ cd ..
 
 # Actualizar las direcciones en la aplicación web
 echo -e "${BLUE}📝 Actualizando direcciones en la aplicación web...${NC}"
-node scripts/update-addresses.js "$CONTRACT_ADDRESS" 3133731337
+node scripts/update-addresses.js "$CONTRACT_ADDRESS" 31337
 
 echo -e "${GREEN}✅ Deploy completado!${NC}"
 echo -e "${BLUE}📋 Resumen:${NC}"
 echo "   - Contrato: $CONTRACT_ADDRESS"
-echo "   - Red: Anvil (Chain ID: 3133731337)"
+echo "   - Red: Anvil (Chain ID: 31337)"
 echo "   - ABI: web/lib/contracts/GymSBT.json"
 echo "   - Direcciones: web/lib/contracts/addresses.ts"
 
